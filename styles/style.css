@@ -1,0 +1,17 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+#registerForm {
+  display: flex;
+  flex-direction: column;
+  max-width: 250px;
+  gap: 15px;
+  padding: 15px;
+  background-color: cadetblue;
+  input[type='text'] {
+    padding: 4px 8px;
+    outline: none;
+  }
+}
