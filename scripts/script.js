@@ -26,6 +26,7 @@
 // ]
 
 const registerForm = document.querySelector('#registerForm');
+const loginForm = document.querySelector('#loginForm');
 
 const users = JSON.parse(localStorage.getItem('users')) || [];
 
@@ -102,7 +103,36 @@ function isAlreadyRegistered(email, users) {
   // users.some((user) => email === user.email);
 }
 
+const isUserDataValid = (user, registeredUsers) =>
+  registeredUsers.some(
+    (registeredUser) =>
+      registeredUser.email === user.email && registeredUser.password === user.password,
+  );
 
+
+loginForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const emailInput = event.target.elements['email'];
+  const passwordInput = event.target.elements['password'];
+  if (emailInput.value && passwordInput.value) {
+    const loginData = {
+      email: emailInput.value,
+      password: passwordInput.value,
+    };
+    if (isUserDataValid(loginData, users)) {
+      loginForm.reset();
+      console.log(
+        `// Привет, ${
+          users.filter((user) => user.email === loginData.email)[0].name
+        }! Вы успешно авторизовались`,
+      );
+    } else {
+      console.log('// Ошибка входа, неверные данные');
+    }
+  } else {
+    console.log('// Ошибка, заполните все обязательные поля');
+  }
+});
 
 
 
@@ -130,8 +160,6 @@ registerForm.addEventListener('submit', (event) => {
 
 
   if (
-    // emailInput.value.trim() &&
-    // passwordInput.value.trim() &&
     isNameValid(nameInput.value.trim()) &&
     isEmailValid(emailInput.value.trim()) &&
     isPhoneValid(phoneNumberInput.value.trim()) &&
@@ -141,7 +169,7 @@ registerForm.addEventListener('submit', (event) => {
     //проверка если все true
     const newUser = {
       //создаем новый объект
-      Name: nameInput.value,
+      name: nameInput.value,
       email: emailInput.value,
       phoneNumber: phoneNumberInput.value,
       password: passwordInput.value,

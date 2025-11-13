@@ -3,16 +3,18 @@
   padding: 0;
   box-sizing: border-box;
 }
-#registerForm {
+#registerForm,
+#loginForm {
   display: flex;
   flex-direction: column;
   max-width: 250px;
   gap: 15px;
   padding: 15px;
   background-color: cadetblue;
+  margin-top: 25px;
   input {
     padding: 4px 8px;
     outline: none;
   }
-  
+
 }
