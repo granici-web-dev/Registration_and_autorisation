@@ -1,13 +1,36 @@
+// 1) Валидация login: обязательное поле, от 2 - 16 символов, уникальное значение. 
+// 2) Валидация password: обязательное поле, от 8 символов, обязательное использование как минимум одного спец. символа("!", ".", "&")
+
 const registerForm = document.querySelector('#registerForm');
 
 const users = JSON.parse(localStorage.getItem('users')) || [];
 
 function validateLogin(value, list) {
   const hasLoginInAList = list.some((user) => {
-    return value === user.login;
+    return value === user.login && value.length > 2 && value.length < 16;
   });
   return !hasLoginInAList;
 }
+
+function hasSpecialSymbol(list) {
+   const symbol = ('!', '.', '&');
+
+   list.forEach((element) => {
+     element === symbol ? true : false
+   });
+}
+
+function validatePassword(value, list) {
+ value.length >= 8 && hasSpecialSymbol(list) ? true : false
+}
+
+function renderMessage() {
+  
+}
+
+// function userRegister(list) {
+  
+// }
 
 registerForm.addEventListener('submit', (event) => {
   event.preventDefault();
