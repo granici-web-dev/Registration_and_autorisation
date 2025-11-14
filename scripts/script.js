@@ -56,8 +56,7 @@ function isEmailValid(email) {
     return email.length >= 7 && email.includes('@');
 }
 
-// Первый символ +, Максимум 12 чисел, Минимум 8 чисел, Только числа
-
+// Функция, которая валидирует телефон. Первый символ +, Максимум 12 чисел, Минимум 8 чисел, Только числа
 function isPhoneValid(phone) {
 
   if (phone[0] != '+') {
@@ -77,15 +76,14 @@ function isPhoneValid(phone) {
   return true
 }
 
+// Функция, которая проверяет, если есть символ из массива
 function hasSpecialSymbol(password) {
   const symbols = ['!', '.', '&'];
-
   return symbols.some((symbols) => password.includes(symbols));
 }
 
-//Минимум 5 символов, максимум 26 символов, Спец символы ('!', '.', '&')
+// Функция, которая валидирует пароль. Минимум 5 символов, максимум 26 символов, Спец символы ('!', '.', '&')
 function isPasswordValid(password) {
-  
   if (password.length >= 5 && password.length <= 26 && hasSpecialSymbol(password)) {
     return true;
   }
@@ -93,48 +91,11 @@ function isPasswordValid(password) {
   return false
 };
 
-
+// Функция, которая проверяет, если пользователь с такимж email уже зарегистрирован
 function isAlreadyRegistered(email, users) {
   const resultAlready = users.some((user) => email === user.email);
-  // console.log(resultAlready);
-  console.log(email);
   return resultAlready;
-  
-  // users.some((user) => email === user.email);
 }
-
-const isUserDataValid = (user, registeredUsers) =>
-  registeredUsers.some(
-    (registeredUser) =>
-      registeredUser.email === user.email && registeredUser.password === user.password,
-  );
-
-
-loginForm.addEventListener('submit', (event) => {
-  event.preventDefault();
-  const emailInput = event.target.elements['email'];
-  const passwordInput = event.target.elements['password'];
-  if (emailInput.value && passwordInput.value) {
-    const loginData = {
-      email: emailInput.value,
-      password: passwordInput.value,
-    };
-    if (isUserDataValid(loginData, users)) {
-      loginForm.reset();
-      console.log(
-        `// Привет, ${
-          users.filter((user) => user.email === loginData.email)[0].name
-        }! Вы успешно авторизовались`,
-      );
-    } else {
-      console.log('// Ошибка входа, неверные данные');
-    }
-  } else {
-    console.log('// Ошибка, заполните все обязательные поля');
-  }
-});
-
-
 
 
 registerForm.addEventListener('submit', (event) => {
@@ -144,19 +105,6 @@ registerForm.addEventListener('submit', (event) => {
   const passwordInput = event.target.elements['password']; //получаем в JS ipnut password через type: name
   const emailInput = event.target.elements['email'];
   const phoneNumberInput = event.target.elements['tel'];
-  
-  const resultOfName = isNameValid(nameInput.value.trim());
-  const resultOfPhone = isPhoneValid(phoneNumberInput.value.trim());
-  const resultOfPassword = isPasswordValid(passwordInput.value.trim());
-  const resultOfEmail = isEmailValid(emailInput.value.trim());
-  const resultAlready = isAlreadyRegistered(emailInput.value.trim(), users);
-
-  console.log(resultOfName);
-  console.log(resultOfPhone);
-  console.log(resultOfPassword);
-  console.log(resultOfEmail);
-  console.log(resultAlready);
-  
 
 
   if (
@@ -189,5 +137,27 @@ registerForm.addEventListener('submit', (event) => {
 });
 
 
+const isUserRegistered = (user, listOfRegisteredUsers) =>
+  listOfRegisteredUsers.every((registeredUser) => {
+    return registeredUser.email === user.email && registeredUser.password === user.password;
+  });
 
+loginForm.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const emailInput = event.target.elements['email'];
+  const passwordInput = event.target.elements['password'];
 
+  if (emailInput.value && passwordInput.value) {
+    const registeredUser = {
+      email: emailInput.value,
+      password: passwordInput.value,
+    };
+
+    if (isUserRegistered(registeredUser, users)) {
+      loginForm.reset();
+      console.log('Success, you are authorized ');
+    } else {
+      console.log('Invalid data');
+    }
+  }
+});
