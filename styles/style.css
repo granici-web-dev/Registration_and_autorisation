@@ -3,18 +3,104 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #001aff;
+}
+
 #registerForm,
 #loginForm {
   display: flex;
   flex-direction: column;
-  max-width: 250px;
-  gap: 15px;
-  padding: 15px;
-  background-color: cadetblue;
+  max-width: 450px;
+  width: 100%;
+  gap: 24px;
+  padding: 24px;
+  background-color: #fff;
   margin-top: 25px;
+  border-radius: 8px;
   input {
-    padding: 4px 8px;
+    padding: 12px 16px;
     outline: none;
+    background-color: #e8ecfd;
+    border: none;
+    font-size: 18px;
+    border-radius: 4px;
   }
 
+  input[type='submit'] {
+    background-color: #001aff;
+    color: #fff;
+    border: none;
+    padding: 16px 16px;
+    transition: all 0.3s ease;
+    font-size: 18px;
+  }
+
+  input[type='submit']:hover{
+    background-color: #0117d6;
+    cursor: pointer;
+  }
+
+}
+
+.signinLink,
+.signupLink{
+  font-size: 18px;
+  color: #001aff;
+  text-align: center;
+}
+
+h2{
+  text-align: center;
+  font-size: 32px;
+}
+
+.profileTitle{
+  font-size: 48px;
+  color: #fff;
+}
+
+.profileEmail{
+  font-size: 24px;
+  color: #fff;
+  text-align: center;
+}
+
+.parent{
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.profileBtn{
+  padding: 16px 24px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.prfileExit{
+  border: 1px solid #fff;
+  background-color: transparent;
+}
+
+.prfileExit:hover{
+  color: #000;
+  background-color: #fff;
+}
+
+.profileDelete{
+  background-color: #f31616;
+  border: none;
+}
+
+.profileDelete:hover{
+  background-color: #b30707;
 }
