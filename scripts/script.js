@@ -1,34 +1,16 @@
-// Имя {
-//  Минимум 2 символа
-//  Максимум 24 символа
-//  Только буквы
-// }
-// Эмейл {
-//  Наличие символа@
-//  Минимум 7 символов
-// }
-// Телефон {
-//  Первый символ +
-//  Максимум 12 чисел
-//  Минимум 8 чисел
-//  Только числа
-// }
-// Пароль {
-//  Минимум 5 символов
-//  максимум 26 символов
-//  Спец символы ('!', '.', '&')
-// }
-
-// const userData = [
-//   {
-
-//   }
-// ]
-
+// === Получаем элементы, которые МОГУТ быть на странице ===
 const registerForm = document.querySelector('#registerForm');
 const loginForm = document.querySelector('#loginForm');
 
-const users = JSON.parse(localStorage.getItem('users')) || [];
+const profileTitle = document.querySelector('.profileTitle');
+const profileEmail = document.querySelector('.profileEmail');
+const profileExit = document.querySelector('.profileExit');
+const profileDelete = document.querySelector('.profileDelete');
+
+// Читаем пользователей и токен из localStorage
+let users = JSON.parse(localStorage.getItem('users')) || [];
+const authToken = localStorage.getItem('authToken');
+const currentUser = users.find((user) => String(user.token) === authToken) || null;
 
 // Функция, которая валидирует name (Минимум 2 символа, Максимум 24 символа, Только буквы)
 const isNameValid = (name) => {
@@ -42,8 +24,6 @@ const isNameValid = (name) => {
     }
   }
 
-  // console.log('Проверки прошли имя');
-
   return true;
 };
 
@@ -52,8 +32,7 @@ function isEmailValid(email) {
   return email.length >= 7 && email.includes('@');
 }
 
-// Первый символ +, Максимум 12 чисел, Минимум 8 чисел, Только числа
-
+// Функция, которая валидирует телефон. Первый символ +, Максимум 12 чисел, Минимум 8 чисел, Только числа
 function isPhoneValid(phone) {
   if (phone[0] != '+') {
     return false;
@@ -68,17 +47,18 @@ function isPhoneValid(phone) {
   if (phone.length - 1 <= 8 || phone.length - 1 >= 12) {
     return false;
   }
-  // console.log('Проверки прошли телефон');
+
   return true;
 }
 
+// Функция, которая проверяеи если есть спец символ из масиива
 function hasSpecialSymbol(password) {
   const symbols = ['!', '.', '&'];
 
   return symbols.some((symbols) => password.includes(symbols));
 }
 
-//Минимум 5 символов, максимум 26 символов, Спец символы ('!', '.', '&')
+// Функция, которая валидирует пароль. Минимум 5 символов, максимум 26 символов, Спец символы ('!', '.', '&')
 function isPasswordValid(password) {
   if (password.length >= 5 && password.length <= 26 && hasSpecialSymbol(password)) {
     return true;
@@ -87,15 +67,61 @@ function isPasswordValid(password) {
   return false;
 }
 
+// Функция, которая проверяет если есть такой зарегистрированный юзер
 function isAlreadyRegistered(email, users) {
   const resultAlready = users.some((user) => email === user.email);
-  // console.log(resultAlready);
-  console.log(email);
   return resultAlready;
-
-  // users.some((user) => email === user.email);
 }
 
+
+// Регистрация
+if (registerForm) {
+  // Если уже авторизован → сразу на профиль
+  if (currentUser) {
+    window.location.href = '/profile.html';
+  }
+
+  registerForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const nameInput = event.target.elements['name'];
+    const emailInput = event.target.elements['email'];
+    const phoneInput = event.target.elements['tel'];
+    const passwordInput = event.target.elements['password'];
+
+    const nameVal = nameInput.value.trim();
+    const emailVal = emailInput.value.trim();
+    const phoneVal = phoneInput.value.trim();
+    const passVal = passwordInput.value.trim();
+
+    if (
+      isNameValid(nameVal) &&
+      isEmailValid(emailVal) &&
+      isPhoneValid(phoneVal) &&
+      isPasswordValid(passVal) &&
+      !isAlreadyRegistered(emailVal, users)
+    ) {
+      const newUser = {
+        name: nameVal,
+        email: emailVal,
+        phoneNumber: phoneVal,
+        password: passVal,
+        token: String(Math.random()), 
+      };
+
+      users.push(newUser);
+      localStorage.setItem('users', JSON.stringify(users));
+
+      registerForm.reset();
+      // после регистрации на логин
+      window.location.href = '/login.html';
+    } else {
+      console.log('Ошибка регистрации: невалидные данные или email уже занят');
+    }
+  });
+}
+
+// Логин
 const isUserDataValid = (user, registeredUsers) =>
   registeredUsers.some(
     (registeredUser) =>
@@ -103,78 +129,79 @@ const isUserDataValid = (user, registeredUsers) =>
   );
 
 if (loginForm) {
+  // Если уже авторизован → сразу на профиль
+  if (currentUser) {
+    window.location.href = '/profile.html';
+  }
+
   loginForm.addEventListener('submit', (event) => {
     event.preventDefault();
+
     const emailInput = event.target.elements['email'];
     const passwordInput = event.target.elements['password'];
-    if (emailInput.value && passwordInput.value) {
+
+    const emailVal = emailInput.value.trim();
+    const passVal = passwordInput.value.trim();
+
+    if (emailVal && passVal) {
       const loginData = {
-        email: emailInput.value,
-        password: passwordInput.value,
+        email: emailVal,
+        password: passVal,
       };
+
       if (isUserDataValid(loginData, users)) {
+        const user = users.find((u) => u.email === loginData.email);
+
+        localStorage.setItem('authToken', String(user.token));
         loginForm.reset();
-        console.log(
-          `// Привет, ${
-            users.filter((user) => user.email === loginData.email)[0].name
-          }! Вы успешно авторизовались`,
-        );
+        window.location.href = '/profile.html';
       } else {
-        console.log('// Ошибка входа, неверные данные');
+        console.log('Ошибка входа: неверный email или пароль');
       }
     } else {
-      console.log('// Ошибка, заполните все обязательные поля');
+      console.log('Ошибка: заполните email и пароль');
     }
   });
 }
 
-if (registerForm) {
-  registerForm.addEventListener('submit', (event) => {
-    event.preventDefault();
+// Профиль
+if (profileTitle || profileEmail || profileExit || profileDelete) {
+  // Мы на profile.html
 
-    const nameInput = event.target.elements['name']; //получаем в JS ipnut name через type: name
-    const passwordInput = event.target.elements['password']; //получаем в JS ipnut password через type: name
-    const emailInput = event.target.elements['email'];
-    const phoneNumberInput = event.target.elements['tel'];
-
-    const resultOfName = isNameValid(nameInput.value.trim());
-    const resultOfPhone = isPhoneValid(phoneNumberInput.value.trim());
-    const resultOfPassword = isPasswordValid(passwordInput.value.trim());
-    const resultOfEmail = isEmailValid(emailInput.value.trim());
-    const resultAlready = isAlreadyRegistered(emailInput.value.trim(), users);
-
-    console.log(resultOfName);
-    console.log(resultOfPhone);
-    console.log(resultOfPassword);
-    console.log(resultOfEmail);
-    console.log(resultAlready);
-
-    if (
-      isNameValid(nameInput.value.trim()) &&
-      isEmailValid(emailInput.value.trim()) &&
-      isPhoneValid(phoneNumberInput.value.trim()) &&
-      !isAlreadyRegistered(emailInput.value.trim(), users) &&
-      isPasswordValid(passwordInput.value.trim())
-    ) {
-      //проверка если все true
-      const newUser = {
-        //создаем новый объект
-        name: nameInput.value,
-        email: emailInput.value,
-        phoneNumber: phoneNumberInput.value,
-        password: passwordInput.value,
-      };
-
-      users.push(newUser); //добавляем объкт в массив
-
-      localStorage.setItem('users', JSON.stringify(users)); // сохраняем объект в localStorage
-
-      nameInput.value = '';
-      emailInput.value = '';
-      phoneNumberInput.value = '';
-      passwordInput.value = ''; // можно и registerForm.reset()
-    } else {
-      console.log('user with such email aleady has been registered');
+  if (!currentUser) {
+    // Нет токена или пользователь не найден возращаем на логин
+    window.location.href = '/login.html';
+  } else {
+    // Подставляем имя и почту
+    if (profileTitle) {
+      profileTitle.textContent = `Welcome, ${currentUser.name}`;
     }
-  });
+
+    if (profileEmail) {
+      profileEmail.textContent = currentUser.email;
+    }
+
+    // Кнопка Exit: удаляем authToken, уходим на логин
+    if (profileExit) {
+      profileExit.addEventListener('click', () => {
+        localStorage.removeItem('authToken');
+        window.location.href = '/login.html';
+      });
+    }
+
+    // Кнопка Delete: удаляем юзера и токен, уходим на регистрацию
+    if (profileDelete) {
+      profileDelete.addEventListener('click', () => {
+        const usersFromStorage = JSON.parse(localStorage.getItem('users')) || [];
+        const updatedUsers = usersFromStorage.filter(
+          (user) => String(user.token) !== String(currentUser.token),
+        );
+
+        localStorage.setItem('users', JSON.stringify(updatedUsers));
+        localStorage.removeItem('authToken');
+
+        window.location.href = '/index.html';
+      });
+    }
+  }
 }

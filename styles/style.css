@@ -86,12 +86,12 @@ h2{
   cursor: pointer;
 }
 
-.prfileExit{
+.profileExit{
   border: 1px solid #fff;
   background-color: transparent;
 }
 
-.prfileExit:hover{
+.profileExit:hover{
   color: #000;
   background-color: #fff;
 }
