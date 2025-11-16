@@ -12,10 +12,10 @@ let users = JSON.parse(localStorage.getItem('users')) || [];
 const authToken = localStorage.getItem('authToken');
 const currentUser = users.find((user) => String(user.token) === authToken) || null;
 
+
+
 // Функция, которая валидирует name (Минимум 2 символа, Максимум 24 символа, Только буквы)
 const isNameValid = (name) => {
-  console.log(name);
-
   if (name.length < 2 || name.length > 24) return false;
   for (let i = 0; i < name.length; i++) {
     const char = name[i];
@@ -76,7 +76,7 @@ function isAlreadyRegistered(email, users) {
 
 // Регистрация
 if (registerForm) {
-  // Если уже авторизован → сразу на профиль
+  // Если уже авторизован направляем сразу на профиль
   if (currentUser) {
     window.location.href = '/profile.html';
   }
@@ -116,7 +116,11 @@ if (registerForm) {
       // после регистрации на логин
       window.location.href = '/login.html';
     } else {
-      console.log('Ошибка регистрации: невалидные данные или email уже занят');
+      const statusMessageElement = document.createElement('p');
+      registerForm.appendChild(statusMessageElement);
+
+      statusMessageElement.textContent ='Ошибка регистрации: невалидные данные или email уже занят';
+      statusMessageElement.style.color = 'red';
     }
   });
 }
@@ -129,7 +133,7 @@ const isUserDataValid = (user, registeredUsers) =>
   );
 
 if (loginForm) {
-  // Если уже авторизован → сразу на профиль
+  // Если уже авторизован направляем сразу на профиль
   if (currentUser) {
     window.location.href = '/profile.html';
   }
@@ -156,11 +160,13 @@ if (loginForm) {
         loginForm.reset();
         window.location.href = '/profile.html';
       } else {
-        console.log('Ошибка входа: неверный email или пароль');
+        const statusMessageElement = document.createElement('p');     
+        loginForm.appendChild(statusMessageElement);
+
+        statusMessageElement.textContent = 'Ошибка входа: неверный email или пароль';
+        statusMessageElement.style.color = 'red'
       }
-    } else {
-      console.log('Ошибка: заполните email и пароль');
-    }
+    } 
   });
 }
 
